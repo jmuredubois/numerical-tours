@@ -43,19 +43,34 @@ subplot( 1 , 2 , 2 );
  plot_levelset( phi ) ;
  title('Original') ;
  
-%% gradient descent step
-for ii = 1:niter
-    %% compute gradient
-    g0 = grad( phi , options ) ;
-    d = max( eps, sqrt( sum( g0 .^2 , 3 ) ) ); %% gradient norm
-    g = g0 ./ repmat( d , [ 1 1 2 ] ); %% normalized gradient
-    K = -d .* div( g , options ) ; % curvature term
-    phi = phi - tau * K ;
-    subplot( 1 , 2 , 2 ) ;
-     plot_levelset( phi ) ;
-     title( sprintf( 'Iteration %03i' , ii ) );
-    drawnow
-    if( mod( ii , 10 ) == 0 )
-%         keyboard ;
-    end
-end
+% %% gradient descent loop
+% for ii = 1:niter
+%     %% compute gradient
+%     g0 = grad( phi , options ) ;
+%     d = max( eps, sqrt( sum( g0 .^2 , 3 ) ) ); %% gradient norm
+%     g = g0 ./ repmat( d , [ 1 1 2 ] ); %% normalized gradient
+%     K = -d .* div( g , options ) ; % curvature term
+%     phi = phi - tau * K ;
+%     subplot( 1 , 2 , 2 ) ;
+%      plot_levelset( phi ) ;
+%      title( sprintf( 'Iteration %03i' , ii ) );
+%     drawnow
+%     if( mod( ii , 10 ) == 0 )
+% %         keyboard ;
+%     end
+% end
+
+
+%% re-distancing
+phi = phi0 .^ 3 ;
+phi1 = perform_redistancing( phi0 ) ;
+
+%% display redistancing
+subplot( 1 , 2 , 1 ) ;
+ plot_levelset( phi ) ;
+ title( 'Before redistancing' ) ;
+subplot( 1 , 2 , 2 ) ;
+ plot_levelset( phi1 ) ;
+ title( 'After redistancing' );
+
+
