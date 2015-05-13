@@ -1,3 +1,5 @@
+% this script is directly derived from http://www.numerical-tours.com/matlab/segmentation_3_snakes_levelset
+
 %% cleanup
 close all;
 clear; 
@@ -6,7 +8,7 @@ clc;
 %% flags to avoid some computations 
 PROC_ARTIFIMG = 0 ; % gradient descent loop on artifical image
 PROC_CORTEXIM = 1 ; % gradient descent loop on cortex image
-PROC_CHANVESE = 1 ; % Chan-Vese segmentation
+PROC_CHANVESE = 0 ; % Chan-Vese segmentation
 
 %% changing path
 % cd /media/Data/Users/murd/Documents/gitLinBoxes/gpeyre-numtours/matlab
