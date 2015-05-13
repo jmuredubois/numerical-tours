@@ -124,7 +124,7 @@ phi0 = max( abs( X - c( 1 ) ) , abs( Y - c( 2 ) ) ) - r ;
 
 %% active contour parameters
 tau = .4;
-Tmax = 1500;
+Tmax = 2000;
 niter = round(Tmax/tau);
 %% init
 phi = phi0 ;
@@ -171,7 +171,7 @@ for i=1:k
         phi0 = min( phi0 , sqrt( ( X - c( 1 ) ).^2 + ( Y - c( 2 ) ).^2 ) - r ) ;
     end
 end
-clf;
+figure('Name', 'gpeyre chan-vese cortex segmentation') ;
 subplot( 1 , 2 , 1 ) ;
  plot_levelset( phi0 ) ;
 subplot( 1 , 2 , 2) ;
@@ -182,13 +182,13 @@ lambda = 0.8 ;
 c1 = 0.7 ;
 c2 = 0.0 ;
 tau = 0.4 ;
-Tmax = 100;
+Tmax = 3000;
 niter = round(Tmax/tau);
 
 %% chan-vese loop
 if( ( exist( 'PROC_CHANVESE', 'var' ) == 1 ) && ( PROC_CHANVESE > 0 ) )
     phi = phi0;
-    figure('Name', 'gpeyre chan-vese cortex segmentation') ;
+    clf ;
     for ii = 1:niter
         gD = grad( phi , options ) ;
         d = max( eps , sqrt( sum( gD .^2 , 3 ) ) ); % find normalizatino factor
