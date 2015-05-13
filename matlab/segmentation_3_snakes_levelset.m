@@ -52,7 +52,7 @@ options.order = 2 ;  %% gpeyre's comment : We use centered differences for the d
 phi = phi0 ;
 %% plot initial shape
 subplot( 1 , 2 , 2 );
-plot_levelset( phi ) ;
+plot_levelset( phi ) ; colorbar ;
 title('Original') ;
 
 %% gradient descent loop
@@ -66,7 +66,7 @@ if( ( exist( 'PROC_ARTIFIMG', 'var' ) == 1 ) && ( PROC_ARTIFIMG > 0 ) )
         phi = phi - tau * K ;
         if( mod( ii , 5 ) == 0 )
             clf;
-            plot_levelset( phi ) ;
+            plot_levelset( phi ) ; colorbar;
             title( sprintf( 'Iteration %03i' , ii ) );
             drawnow
         end
