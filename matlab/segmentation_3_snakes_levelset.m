@@ -17,16 +17,16 @@ getd('toolbox_general/');
 getd('toolbox_graph/');
 
 %% img param
-n = 200;
-[Y,X] = meshgrid(1:n,1:n);
-r = n/3;
+n = 320 ; m = 240 ;
+[ Y , X ] = meshgrid( 1:m , 1:n );
+r = n / 3;
 c = [r r] +10;
 
 %% first field - circle
-phi1 = sqrt( (X-c(1)).^2 + (Y-c(2)).^2 ) - r;
+phi1 = sqrt( ( X - c( 1 ) ).^2 + ( Y - c( 2 ) ).^2 ) - r ;
 %% second field
 c2 = 2*[r r] - [10 5];
-phi2 = max( abs(X-c2(1)) , abs(Y-c2(2)) ) - r;
+phi2 = max( abs( X -c2 ( 1 ) ) , abs( Y - c2( 2 ) ) ) - r ;
 
 %% display the two fields separately
 figure('Name', 'gpeyre segmentation 3 snakes levelset') ;
@@ -62,12 +62,11 @@ if( ( exist( 'PROC_ARTIFIMG', 'var' ) == 1 ) && ( PROC_ARTIFIMG > 0 ) )
         g = g0 ./ repmat( d , [ 1 1 2 ] ); %% normalized gradient
         K = -d .* div( g , options ) ; % curvature term
         phi = phi - tau * K ;
-        subplot( 1 , 2 , 2 ) ;
-        plot_levelset( phi ) ;
-        title( sprintf( 'Iteration %03i' , ii ) );
-        drawnow
-        if( mod( ii , 10 ) == 0 )
-            %         keyboard ;
+        if( mod( ii , 5 ) == 0 )
+            clf;
+            plot_levelset( phi ) ;
+            title( sprintf( 'Iteration %03i' , ii ) );
+            drawnow
         end
     end
 end
@@ -92,9 +91,10 @@ end
 %% edge-based segmentation with geodesic active contour
 %%%
 %% input image
-n = 200 ;
+n = 320 ; m = 240 ;
 name = 'cortex' ;
-f0 = rescale( sum( load_image( name , n ) , 3 ) ) ;
+%f0 = rescale( sum( load_image( name , n ) , 3 ) ) ;
+f0 = imresize( sum( double( imread( sprintf( '%s.bmp', name ) ) ) , 3 ) , [n m] );
  
 %% compute gradient
 g = grad( f0 , options ) ;
@@ -114,9 +114,9 @@ imageplot( f0 , 'Image to segment', 1 , 2 , 1 ) ;
 imageplot(  W , 'Weights'         , 1 , 2 , 2 ) ;
 
 %% initial contour, centered square
-[ Y , X ] = meshgrid( 1:n ,1:n ) ;
-r = n / 3 ;
-c = [ n n ] / 2 ;
+[ Y , X ] = meshgrid( 1:m ,1:n ) ;
+r = min( [ n m ] ) / 3 ;
+c = [ n m ] / 2 ;
 phi0 = max( abs( X - c( 1 ) ) , abs( Y - c( 2 ) ) ) - r ;
 %% display initial contour
 % clf ;
@@ -137,8 +137,8 @@ if( ( exist( 'PROC_CORTEXIM', 'var' ) == 1 ) && ( PROC_CORTEXIM > 0 ) )
     figure('Name', 'gpeyre cortex segmentation') ;
     for ii = 1:niter
         gD = grad( phi , options ) ;
-        d = max( eps , sqrt( sum( gD .^2 , 3 ) ) ); % normalized gradient
-        g = gD ./ repmat( d , [ 1 1 2 ] ); 
+        d = max( eps , sqrt( sum( gD .^2 , 3 ) ) ); % find normalization factor
+        g = gD ./ repmat( d , [ 1 1 2 ] ); % normalized gradient
         G = - W .* d .* div( g , options ) - sum( gW .* gD , 3 ) ; % gradient
         phi = phi - tau * G ; % gradient descent step
         if( mod( ii , 5 ) == 0 )
@@ -161,10 +161,10 @@ end
 %%%
 
 %% using small circles as init
-[ Y , X ] = meshgrid( 1:n , 1:n ) ;
+[ Y , X ] = meshgrid( 1:m , 1:n ) ;
 k = 4 ; %number of circles
-r = .3 * n / k ;
-phi0 = zeros( n , n ) + Inf ;
+r = .3 * min( [ n m ] ) / k ;
+phi0 = zeros( n , m ) + Inf ;
 for i=1:k
     for j=1:k
         c = ( [ i j ] - 1 ) * ( n / k ) + ( n / k ) * .5 ;
@@ -182,7 +182,7 @@ lambda = 0.8 ;
 c1 = 0.7 ;
 c2 = 0.0 ;
 tau = 0.4 ;
-Tmax = 3000;
+Tmax = 2000;
 niter = round(Tmax/tau);
 
 %% chan-vese loop
@@ -191,7 +191,7 @@ if( ( exist( 'PROC_CHANVESE', 'var' ) == 1 ) && ( PROC_CHANVESE > 0 ) )
     clf ;
     for ii = 1:niter
         gD = grad( phi , options ) ;
-        d = max( eps , sqrt( sum( gD .^2 , 3 ) ) ); % find normalizatino factor
+        d = max( eps , sqrt( sum( gD .^2 , 3 ) ) ); % find normalization factor
         g = gD ./ repmat( d , [ 1 1 2 ] ); % normalized gradient
         G = - d .* div( g , options ) ...
                 - ( lambda * ( f0 - c1 ).^2 ) ...

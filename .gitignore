@@ -1,3 +1,4 @@
+*.asv
 *.pyc
 
 .ipynb_checkpoints/
